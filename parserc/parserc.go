@@ -236,8 +236,8 @@ func Many1(p *Parser) *Parser {
 	})
 }
 
-// Optional 尝试应用解析器，并在失败时返回默认值
-func Optional(p *Parser, defaultValue any) *Parser {
+// Opt 尝试应用解析器，并在失败时返回默认值
+func Opt(p *Parser, defaultValue any) *Parser {
 	return &Parser{func(input Input) (ParseResult, error) {
 		r, err := p.parse(input)
 		if err != nil {
@@ -258,8 +258,8 @@ func Peek(probe *Parser, success *Parser, failed *Parser) *Parser {
 	}}
 }
 
-// SeparatedBy 匹配被给定分隔符分隔的输入
-func SeparatedBy(delimiter *Parser, p *Parser) *Parser {
+// Separate 匹配被给定分隔符分隔的输入
+func Separate(delimiter *Parser, p *Parser) *Parser {
 	return p.And(Skip(delimiter).And(p).Many()).Map(func(p any) any {
 		var result []any
 		result = append(result, p.(Pair).First)
@@ -334,8 +334,8 @@ func (p *Parser) Skip(rhs *Parser) *Parser {
 	return SkipSecond(p, rhs)
 }
 
-// SurroundedBy 在当前解析器周围应用另一个解析器
-func (p *Parser) SurroundedBy(parser *Parser) *Parser {
+// Surround 在当前解析器周围应用另一个解析器
+func (p *Parser) Surround(parser *Parser) *Parser {
 	return Seq(parser, p, parser).Map(func(rs any) any {
 		return rs.([]any)[1]
 	})
@@ -346,9 +346,9 @@ func (p *Parser) ManyUntil(until *Parser) *Parser {
 	return Peek(until, Fail("no error message"), p).Many()
 }
 
-// Optional 将当前解析器变为可选，并提供默认解析结果
-func (p *Parser) Optional(defaultValue any) *Parser {
-	return Optional(p, defaultValue)
+// Opt 将当前解析器变为可选，并提供默认解析结果
+func (p *Parser) Opt(defaultValue any) *Parser {
+	return Opt(p, defaultValue)
 }
 
 // Fatal 当前解析器失败时，抛出关键错误

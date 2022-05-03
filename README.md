@@ -23,11 +23,11 @@ func toString(v any) any {
 }
 
 func join(list any) any {
-    str := ""
+    s := ""
     for _, e := range list.([]any) {
-        str += toString(e).(string)
+        s += toString(e).(string)
     }
-    return str
+    return s
 }
 
 func toFloat(a any) any {
@@ -57,14 +57,14 @@ var (
     ws          = w.Many()
     digit       = Range('0', '9').Map(toString)
     digits      = digit.Many1().Map(join)
-    integer     = digits.Map(toFloat).SurroundedBy(ws)
-    decimal     = Seq(digits, Ch('.'), digits).Map(join).Map(toFloat).SurroundedBy(ws)
-    add         = Str("+").SurroundedBy(ws)
-    sub         = Str("-").SurroundedBy(ws)
-    mul         = Str("*").SurroundedBy(ws)
-    div         = Str("/").SurroundedBy(ws)
-    lp          = Str("(").SurroundedBy(ws)
-    rp          = Str(")").SurroundedBy(ws)
+    integer     = digits.Map(toFloat).Surround(ws)
+    decimal     = Seq(digits, Ch('.'), digits).Map(join).Map(toFloat).Surround(ws)
+    add         = Str("+").Surround(ws)
+    sub         = Str("-").Surround(ws)
+    mul         = Str("*").Surround(ws)
+    div         = Str("/").Surround(ws)
+    lp          = Str("(").Surround(ws)
+    rp          = Str(")").Surround(ws)
     expr        = NewParser()
     bracketExpr = Skip(lp).And(expr).Skip(rp)
     fact        = OneOf(decimal, integer, bracketExpr)
@@ -109,11 +109,11 @@ func toString(v any) any {
 }
 
 func join(list any) any {
-    str := ""
+    s := ""
     for _, e := range list.([]any) {
-        str += toString(e).(string)
+        s += toString(e).(string)
     }
-    return str
+    return s
 }
 
 func toInt(s any) any {
@@ -144,20 +144,20 @@ var (
     ws       = w.Many()
     digit    = Range('0', '9').Map(toString)
     digits   = digit.Many1().Map(join)
-    integer  = digits.Map(toInt).SurroundedBy(ws)
-    decimal  = Seq(digits, Ch('.'), digits).SurroundedBy(ws).Map(join).Map(toFloat)
-    str      = Skip(Ch('"')).And(Not('"').Many()).Skip(Ch('"')).Map(join).SurroundedBy(ws)
-    boolean  = Str("true").Or(Str("false")).Map(toBool).SurroundedBy(ws)
-    objStart = Ch('{').SurroundedBy(ws)
-    objEnd   = Ch('}').SurroundedBy(ws)
-    arrStart = Ch('[').SurroundedBy(ws)
-    arrEnd   = Ch(']').SurroundedBy(ws)
-    colon    = Ch(':').SurroundedBy(ws)
-    comma    = Ch(',').SurroundedBy(ws)
+    integer  = digits.Map(toInt).Surround(ws)
+    decimal  = Seq(digits, Ch('.'), digits).Surround(ws).Map(join).Map(toFloat)
+    str      = Skip(Ch('"')).And(Not('"').Many()).Skip(Ch('"')).Map(join).Surround(ws)
+    boolean  = Str("true").Or(Str("false")).Map(toBool).Surround(ws)
+    objStart = Ch('{').Surround(ws)
+    objEnd   = Ch('}').Surround(ws)
+    arrStart = Ch('[').Surround(ws)
+    arrEnd   = Ch(']').Surround(ws)
+    colon    = Ch(':').Surround(ws)
+    comma    = Ch(',').Surround(ws)
     jsonObj  = NewParser()
-    arr      = Skip(arrStart).And(SeparatedBy(comma, jsonObj).Optional([]any{})).Skip(arrEnd)
+    arr      = Skip(arrStart).And(Separate(comma, jsonObj).Opt([]any{})).Skip(arrEnd)
     pair     = str.Skip(colon).And(jsonObj)
-    obj      = Skip(objStart).And(SeparatedBy(comma, pair).Optional([]any{})).Skip(objEnd).Map(buildObj)
+    obj      = Skip(objStart).And(Separate(comma, pair).Opt([]any{})).Skip(objEnd).Map(buildObj)
 )
 
 func init() {

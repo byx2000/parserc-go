@@ -128,8 +128,8 @@ func TestMany1(t *testing.T) {
 }
 
 func TestOptional(t *testing.T) {
-	verifySuccess(t, Ch('a').Optional('x'), "", 'x')
-	verifySuccess(t, Ch('a').Optional('x'), "a", 'a')
+	verifySuccess(t, Ch('a').Opt('x'), "", 'x')
+	verifySuccess(t, Ch('a').Opt('x'), "a", 'a')
 }
 
 func TestPeek(t *testing.T) {
@@ -140,21 +140,21 @@ func TestPeek(t *testing.T) {
 }
 
 func TestSeparatedBy(t *testing.T) {
-	verifySuccess(t, SeparatedBy(Ch(','), Any()), "a,b,c", []any{'a', 'b', 'c'})
-	verifySuccess(t, SeparatedBy(Ch(','), Any()), "a", []any{'a'})
-	verifyFailed(t, SeparatedBy(Ch(','), Any()), "")
+	verifySuccess(t, Separate(Ch(','), Any()), "a,b,c", []any{'a', 'b', 'c'})
+	verifySuccess(t, Separate(Ch(','), Any()), "a", []any{'a'})
+	verifyFailed(t, Separate(Ch(','), Any()), "")
 }
 
 func TestSurroundedBy(t *testing.T) {
-	verifySuccess(t, Ch('a').SurroundedBy(Ch('b')), "bab", 'a')
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "bax")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "xab")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "xay")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "bmb")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "ba")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "ab")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "a")
-	verifyFailed(t, Ch('a').SurroundedBy(Ch('b')), "")
+	verifySuccess(t, Ch('a').Surround(Ch('b')), "bab", 'a')
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "bax")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "xab")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "xay")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "bmb")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "ba")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "ab")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "a")
+	verifyFailed(t, Ch('a').Surround(Ch('b')), "")
 }
 
 func TestFatal(t *testing.T) {
